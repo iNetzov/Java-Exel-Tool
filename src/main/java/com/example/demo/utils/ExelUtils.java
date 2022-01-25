@@ -1,10 +1,7 @@
 package com.example.demo.utils;
 
 import com.example.demo.model.binding.EmployeeBindingModel;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
@@ -15,21 +12,34 @@ import java.util.List;
 public class ExelUtils {
     public static final String EXEL_PATH = "./data/TestData.xlsx";
 
-    private static Object getCellValues(Cell cell) {
-        switch (cell.getCellType()) {
-            case STRING -> {
-                return cell.getStringCellValue();
+    private static Object getCellValues(Cell cell,Workbook workbook) {
+        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+        if (cell.getCellType() == CellType.FORMULA){
+            switch (evaluator.evaluateFormulaCell(cell)) {
+                case BOOLEAN:
+                    return cell.getBooleanCellValue();
+                case NUMERIC:
+                    return cell.getNumericCellValue();
+                case STRING:
+                    return cell.getStringCellValue();
             }
-            case NUMERIC -> {
-                return cell.getNumericCellValue();
-            }
-            case BOOLEAN -> {
-                return cell.getBooleanCellValue();
-            }
-            default -> {
-                return null;
+        }else{
+            switch (cell.getCellType()) {
+                case STRING -> {
+                    return cell.getStringCellValue();
+                }
+                case NUMERIC -> {
+                    return cell.getNumericCellValue();
+                }
+                case BOOLEAN -> {
+                    return cell.getBooleanCellValue();
+                }
+                default -> {
+                    return null;
+                }
             }
         }
+        return null;
     }
 
     public static List<EmployeeBindingModel> readDataFromExelFile() throws IOException {
@@ -53,17 +63,17 @@ public class ExelUtils {
 
                 switch (columnIndex) {
                     case 0:
-                        employee.setfName((String) getCellValues(nextCell)); break;
+                        employee.setfName((String) getCellValues(nextCell,workbook)); break;
                     case 1:
-                        employee.setlName((String) getCellValues(nextCell)); break;
+                        employee.setlName((String) getCellValues(nextCell,workbook)); break;
                     case 2:
-                        employee.setAge((Double) getCellValues(nextCell)); break;
+                        employee.setAge((Double) getCellValues(nextCell,workbook)); break;
                     case 3:
-                        employee.setCompany((String) getCellValues(nextCell)); break;
+                        employee.setCompany((String) getCellValues(nextCell,workbook)); break;
                     case 4:
-                        employee.setJobTitle((String) getCellValues(nextCell)); break;
+                        employee.setJobTitle((String) getCellValues(nextCell,workbook)); break;
                     case 5:
-                        employee.setSalary((Double) getCellValues(nextCell)); break;
+                        employee.setSalary((Double) getCellValues(nextCell,workbook)); break;
                 }
             }
             employeeList.add(employee);
