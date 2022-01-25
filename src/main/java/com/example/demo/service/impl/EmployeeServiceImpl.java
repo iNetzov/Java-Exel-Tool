@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.DTO.EmployeeDTO;
 import com.example.demo.model.binding.EmployeeBindingModel;
 import com.example.demo.model.entity.EmployeeEntity;
 import com.example.demo.model.sevice.EmployeeServiceModel;
@@ -38,6 +39,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeEntity>outputList = new ArrayList<>();
         for (EmployeeServiceModel employeeServiceModel : list) {
             EmployeeEntity map = modelMapper.map(employeeServiceModel, EmployeeEntity.class);
+            outputList.add(map);
+        }
+        return outputList;
+    }
+
+    @Override
+    public List<EmployeeDTO> fromEntityToDTO() {
+        List<EmployeeEntity> all = employeeRepository.findAll();
+        List<EmployeeDTO>outputList = new ArrayList<>();
+        for (EmployeeEntity employeeEntity : all) {
+            EmployeeDTO map = modelMapper.map(employeeEntity, EmployeeDTO.class);
             outputList.add(map);
         }
         return outputList;
